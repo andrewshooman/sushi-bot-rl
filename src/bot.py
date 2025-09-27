@@ -294,31 +294,44 @@ class SushiBot(BaseAgent):
         self.previous_action = np.zeros(8, dtype=np.float32)  # Store previous action for obs
         self.chat_cooldown = 0  # Prevent chat spam
         self.last_goal_time = 0
+        self.last_score = {'blue': 0, 'orange': 0}  # Track scores for goal detection
+        self.kickoff_detected = False
         
-        # Sushi-themed quick chat messages
+        # Sushi-themed quick chat messages (using RLBot quick chat IDs)
+        # Quick chat IDs correspond to standard Rocket League quick chats
         self.sushi_chats = {
             'goal_scored': [
-                "Wasabi! 🍣",
-                "Raw power! 🐟", 
-                "That was fresh! 🥢",
-                "Soy good! 🍜",
-                "Rice to meet you! 🍱"
+                0x00,  # "Nice shot!"
+                0x01,  # "Great pass!" 
+                0x02,  # "Thanks!"
+                0x03,  # "What a save!"
+                0x04   # "Nice one!"
             ],
             'goal_conceded': [
-                "Sashimi mistake...",
-                "That was fishy... 🐟",
-                "Need more practice! 🥢",
-                "Oof! 🍤"
+                0x06,  # "Whoops..."
+                0x07,  # "Sorry!"
+                0x08,  # "My bad..."
+                0x09   # "Oops!"
             ],
             'save': [
-                "Saved like sushi grade tuna! 🍣",
-                "Fresh defense! 🥢",
-                "No rolls allowed! 🍱"
+                0x03,  # "What a save!"
+                0x0A,  # "OMG!"
+                0x0B   # "Noooo!"
             ],
             'demo': [
-                "Chopped like vegetables! 🥒",
-                "Slice and dice! 🔪",
-                "Sushi chef style! 👨‍🍳"
+                0x15,  # "Savage!"
+                0x16,  # "Okay."
+                0x0A   # "OMG!"
+            ],
+            'kickoff': [
+                0x1C,  # "I got it!"
+                0x1D,  # "Take the shot!"
+                0x1E   # "Defending..."
+            ],
+            'general': [  # Random celebrations
+                0x1F,  # "Wow!"
+                0x20,  # "Calculated."
+                0x21   # "No problem."
             ]
         }
         
@@ -409,17 +422,42 @@ class SushiBot(BaseAgent):
             self.chat_cooldown -= 1
             return
             
-        # Check for goals (simple detection based on score changes)
         current_time = packet.game_info.seconds_elapsed
+        current_score = {'blue': packet.teams[0].score, 'orange': packet.teams[1].score}
         
-        # Goal celebration (very basic detection - in a real implementation you'd track score changes)
-        if current_time > self.last_goal_time + 5.0:  # Minimum 5 seconds between celebrations
-            # Random chance to celebrate
-            if random.random() < 0.01:  # 1% chance per frame while playing
-                chat_msg = random.choice(self.sushi_chats['goal_scored'])
-                print(f"[SushiBot] 🍣 {chat_msg}")
+        # Check for goal scored
+        if (current_score['blue'] > self.last_score['blue'] or 
+            current_score['orange'] > self.last_score['orange']):
+            
+            # Goal celebration! 🍣
+            if random.random() < 0.8:  # 80% chance to celebrate a goal
+                chat_id = random.choice(self.sushi_chats['goal_scored'])
+                self.send_quick_chat(team_only=False, quick_chat=chat_id)
                 self.chat_cooldown = 300  # 5 second cooldown
-                self.last_goal_time = current_time
+            
+            self.last_score = current_score.copy()
+            return
+        
+        # Check for kickoff (ball near center and game active)
+        ball = packet.game_ball.physics.location
+        if (abs(ball.x) < 50 and abs(ball.y) < 50 and 
+            packet.game_info.is_round_active and not self.kickoff_detected):
+            
+            if random.random() < 0.3:  # 30% chance to say something on kickoff
+                chat_id = random.choice(self.sushi_chats['kickoff'])
+                self.send_quick_chat(team_only=True, quick_chat=chat_id)  # Team chat for kickoff
+                self.chat_cooldown = 180  # 3 second cooldown
+                self.kickoff_detected = True
+        
+        # Reset kickoff detection when ball moves away from center
+        if abs(ball.x) > 200 or abs(ball.y) > 200:
+            self.kickoff_detected = False
+        
+        # Random sushi celebrations (very rare)
+        if current_time > 10.0 and random.random() < 0.0005:  # Very rare random celebrations
+            chat_id = random.choice(self.sushi_chats['general'])
+            self.send_quick_chat(team_only=False, quick_chat=chat_id)
+            self.chat_cooldown = 600  # 10 second cooldown for random chats
 
 def create_agent(config, team, index):
     # RLBot calls this

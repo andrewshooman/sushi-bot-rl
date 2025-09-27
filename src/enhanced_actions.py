@@ -110,9 +110,14 @@ class EnhancedActionParser:
             dist = Categorical(logits=padded_logits)
             action_indices = dist.sample()
         
-        # Convert to numpy and parse
-        action_index = action_indices.numpy().item() if hasattr(action_indices, 'numpy') else action_indices
-        parsed_action = self.parse_action_index(action_index)
+        # Convert to numpy and parse - ensure we get a single scalar value
+        if hasattr(action_indices, 'numpy'):
+            action_numpy = action_indices.numpy()
+            action_index = action_numpy.item() if action_numpy.size == 1 else action_numpy[0]
+        else:
+            action_index = action_indices if np.isscalar(action_indices) else action_indices[0]
+        
+        parsed_action = self.parse_action_index(int(action_index))
         
         return parsed_action, weights
 

@@ -250,17 +250,41 @@ class EnhancedObsBuilder:
 def packet_to_enhanced_obs(packet, index: int, previous_action: np.ndarray) -> np.ndarray:
     """
     Convert RLBot packet to enhanced observation
-    This is a simplified version for compatibility with existing bot.py
+    Simplified direct conversion without GameState dependency
     """
-    obs_builder = EnhancedObsBuilder()
+    # For now, return a simplified observation that matches the expected size
+    # This is a temporary fix until we can properly integrate the RLGym GameState
+    obs_size = 243  # Enhanced observation size
     
-    # Create a mock game state from packet
-    game_state = GameState()
-    game_state.decode(packet, 1)  # 1 tick elapsed
+    # Create a basic observation from the packet data
+    obs = np.zeros(obs_size, dtype=np.float32)
     
-    if index < len(game_state.players):
-        player = game_state.players[index]
-        return obs_builder.build_obs(player, game_state, previous_action)
-    else:
-        # Return zero observation if player not found
-        return np.zeros(obs_builder.get_obs_size(), dtype=np.float32)
+    if index < len(packet.game_cars) and packet.game_cars[index].physics.location.x != 0:
+        # Basic ball information (9 features)
+        ball = packet.game_ball.physics
+        obs[0] = ball.location.x / 4096.0  # Normalized position
+        obs[1] = ball.location.y / 5120.0
+        obs[2] = ball.location.z / 2044.0
+        obs[3] = ball.velocity.x / 2300.0  # Normalized velocity
+        obs[4] = ball.velocity.y / 2300.0
+        obs[5] = ball.velocity.z / 2300.0
+        obs[6] = ball.angular_velocity.x / 6.0  # Normalized angular velocity
+        obs[7] = ball.angular_velocity.y / 6.0
+        obs[8] = ball.angular_velocity.z / 6.0
+        
+        # Previous action (8 features starting at index 9)
+        if len(previous_action) >= 8:
+            obs[9:17] = previous_action[:8]
+        
+        # Player information (starting at index 17)
+        for i, car in enumerate(packet.game_cars[:6]):  # Max 6 players
+            base_idx = 17 + i * 32
+            if base_idx + 32 <= obs_size:
+                # Basic car data (simplified)
+                obs[base_idx:base_idx+3] = [car.physics.location.x/4096.0, car.physics.location.y/5120.0, car.physics.location.z/2044.0]
+                obs[base_idx+3:base_idx+6] = [car.physics.velocity.x/2300.0, car.physics.velocity.y/2300.0, car.physics.velocity.z/2300.0]
+                obs[base_idx+6] = car.boost / 100.0
+                obs[base_idx+7] = 1.0 if car.jumped else 0.0
+                obs[base_idx+8] = 1.0 if car.double_jumped else 0.0
+    
+    return obs
