@@ -4,7 +4,11 @@ Simple test script to verify our observation and action parsers work
 """
 import sys
 import os
-sys.path.append(os.path.dirname(__file__))
+
+# Add the src directory to the path
+src_path = os.path.join(os.path.dirname(__file__), '..', 'src')
+if src_path not in sys.path:
+    sys.path.insert(0, src_path)
 
 try:
     from train import ExampleBotObs, ExampleBotAction, build_rlgym_v2_env

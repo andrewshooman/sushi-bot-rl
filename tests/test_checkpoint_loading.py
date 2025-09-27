@@ -6,9 +6,15 @@ import sys
 import os
 
 # Add the src directory to the path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
+src_path = os.path.join(os.path.dirname(__file__), '..', 'src')
+if src_path not in sys.path:
+    sys.path.insert(0, src_path)
 
-from bot import latest_checkpoint
+try:
+    from bot import latest_checkpoint
+except ImportError as e:
+    print(f"❌ Failed to import bot components: {e}")
+    sys.exit(1)
 
 def main():
     print("Testing checkpoint loading...")

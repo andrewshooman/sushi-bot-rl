@@ -2,17 +2,21 @@ import os
 import glob
 import numpy as np
 import torch
+import random
 
 from rlbot.agents.base_agent import BaseAgent, SimpleControllerState
 from rlbot.utils.structures.game_data_struct import GameTickPacket
+from enhanced_obs import packet_to_enhanced_obs
+from enhanced_actions import EnhancedActionParser
 
 # ----------------- shared constants -----------------
-OBS_SIZE = 64                 # match the enhanced preset (64 observations) 
-N_ACTIONS = 19                # match the enhanced discrete action space (19 actions)
+OBS_SIZE = 243                # Enhanced observation system (243 features: 51 base + 32*6 players)
+N_ACTIONS = 8                 # Enhanced discrete action space (8 actions from Nexto's lookup table)
 
 # Get absolute path to checkpoints directory
-BOT_DIR = os.path.dirname(os.path.abspath(__file__))
-CHECKPOINT_ROOT = os.path.join(BOT_DIR, 'data', 'checkpoints')
+SRC_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(SRC_DIR)
+CHECKPOINT_ROOT = os.path.join(PROJECT_ROOT, 'data', 'checkpoints')
 # ----------------------------------------------------
 
 def latest_checkpoint():
@@ -282,10 +286,42 @@ def action_to_controls(a: int) -> SimpleControllerState:
     c.jump     = bool(j)
     return c
 
-class MyRLGymBot(BaseAgent):
+class SushiBot(BaseAgent):
     def initialize_agent(self):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.model  = TinyPolicy().to(self.device).eval()
+        self.model = TinyPolicy().to(self.device).eval()
+        self.action_parser = EnhancedActionParser()
+        self.previous_action = np.zeros(8, dtype=np.float32)  # Store previous action for obs
+        self.chat_cooldown = 0  # Prevent chat spam
+        self.last_goal_time = 0
+        
+        # Sushi-themed quick chat messages
+        self.sushi_chats = {
+            'goal_scored': [
+                "Wasabi! 🍣",
+                "Raw power! 🐟", 
+                "That was fresh! 🥢",
+                "Soy good! 🍜",
+                "Rice to meet you! 🍱"
+            ],
+            'goal_conceded': [
+                "Sashimi mistake...",
+                "That was fishy... 🐟",
+                "Need more practice! 🥢",
+                "Oof! 🍤"
+            ],
+            'save': [
+                "Saved like sushi grade tuna! 🍣",
+                "Fresh defense! 🥢",
+                "No rolls allowed! 🍱"
+            ],
+            'demo': [
+                "Chopped like vegetables! 🥒",
+                "Slice and dice! 🔪",
+                "Sushi chef style! 👨‍🍳"
+            ]
+        }
+        
         ckpt = latest_checkpoint()
         if ckpt and os.path.isfile(ckpt):
             try:
@@ -337,22 +373,54 @@ class MyRLGymBot(BaseAgent):
                 elif "current_simple" in ckpt:
                     training_type = "simple (32-obs basic)"
                 
-                print(f"[MyRLGymBot] ✅ Loaded {training_type} checkpoint: {ckpt}")
-                print(f"[MyRLGymBot] Architecture: {input_size} observations, {output_size} actions")
+                print(f"[SushiBot] 🍣 Loaded {training_type} checkpoint: {ckpt}")
+                print(f"[SushiBot] Architecture: {input_size} observations, {output_size} actions")
             except Exception as e:
-                print(f"[MyRLGymBot] Failed to load {ckpt}: {e}")
-                print(f"[MyRLGymBot] No checkpoint found; running untrained.")
+                print(f"[SushiBot] Failed to load {ckpt}: {e}")
+                print(f"[SushiBot] No checkpoint found; running untrained like fresh fish! 🐟")
         else:
-            print("[MyRLGymBot] No checkpoint found; running untrained.")
+            print("[SushiBot] No checkpoint found; running untrained like fresh fish! 🐟")
 
     def get_output(self, game_tick_packet: GameTickPacket) -> SimpleControllerState:
         index = self.index if self.index is not None else 0
-        obs = packet_to_obs(game_tick_packet, index)
+        
+        # Use enhanced observation system
+        obs = packet_to_enhanced_obs(game_tick_packet, index, self.previous_action)
+        
+        # Get action from neural network
         with torch.no_grad():
             logits = self.model(torch.from_numpy(obs).unsqueeze(0).to(self.device))
-            action = int(torch.argmax(logits, dim=1).item())
-        return action_to_controls(action)
+            # Use enhanced action parser with beta sampling for more sophisticated behavior
+            action_array, _ = self.action_parser.parse_action_logits(logits.squeeze(0), beta=0.7)
+        
+        # Store action for next observation
+        self.previous_action = action_array.copy()
+        
+        # Handle sushi-themed quick chat
+        self.handle_sushi_chat(game_tick_packet)
+        
+        # Convert to RLBot controls
+        from enhanced_actions import action_to_controls
+        return action_to_controls(action_array)
+    
+    def handle_sushi_chat(self, packet: GameTickPacket):
+        """Handle sushi-themed quick chat messages based on game events"""
+        if self.chat_cooldown > 0:
+            self.chat_cooldown -= 1
+            return
+            
+        # Check for goals (simple detection based on score changes)
+        current_time = packet.game_info.seconds_elapsed
+        
+        # Goal celebration (very basic detection - in a real implementation you'd track score changes)
+        if current_time > self.last_goal_time + 5.0:  # Minimum 5 seconds between celebrations
+            # Random chance to celebrate
+            if random.random() < 0.01:  # 1% chance per frame while playing
+                chat_msg = random.choice(self.sushi_chats['goal_scored'])
+                print(f"[SushiBot] 🍣 {chat_msg}")
+                self.chat_cooldown = 300  # 5 second cooldown
+                self.last_goal_time = current_time
 
 def create_agent(config, team, index):
     # RLBot calls this
-    return MyRLGymBot(name="MyRLGymBot", team=team, index=index)
+    return SushiBot(name="SushiBot 🍣", team=team, index=index)

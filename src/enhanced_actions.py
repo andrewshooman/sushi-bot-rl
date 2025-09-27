@@ -156,3 +156,23 @@ def create_action_parser(enhanced: bool = True) -> "ActionParser":
         return EnhancedActionParser()
     else:
         return SimpleActionParser()
+
+
+def action_to_controls(action_array: np.ndarray):
+    """
+    Convert action array to RLBot SimpleControllerState
+    Action array format: [throttle, steer, pitch, yaw, roll, jump, boost, handbrake]
+    """
+    from rlbot.agents.base_agent import SimpleControllerState
+    
+    controls = SimpleControllerState()
+    controls.throttle = action_array[0]
+    controls.steer = action_array[1]
+    controls.pitch = action_array[2]
+    controls.yaw = action_array[3]
+    controls.roll = action_array[4]
+    controls.jump = action_array[5] > 0.5
+    controls.boost = action_array[6] > 0.5
+    controls.handbrake = action_array[7] > 0.5
+    
+    return controls

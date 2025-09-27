@@ -12,13 +12,14 @@ from datetime import datetime
 
 # Create a simple policy network that matches the bot architecture
 class BotCompatiblePolicy(nn.Module):
-    def __init__(self, obs_size=64):  # Updated to 64 for enhanced awareness
+    def __init__(self, obs_size=243):  # Enhanced observations: 243 features
         super().__init__()
-        # Architecture must match bot: obs_size -> 256 -> 256 -> 9 actions
+        # Architecture must match SushiBot: 243 -> 512 -> 256 -> 256 -> 8 actions
         self.model = nn.Sequential(
-            nn.Linear(obs_size, 256), nn.ReLU(),
-            nn.Linear(256, 256), nn.ReLU(),
-            nn.Linear(256, 9)
+            nn.Linear(obs_size, 512), nn.ReLU(),    # Layer 0
+            nn.Linear(512, 256), nn.ReLU(),         # Layer 2
+            nn.Linear(256, 256), nn.ReLU(),         # Layer 4
+            nn.Linear(256, 8)                       # Layer 6 (enhanced action space)
         )
     
     def forward(self, x):
@@ -63,7 +64,7 @@ def create_simple_checkpoint():
     
     print(f"✅ Created compatible checkpoint: {checkpoint_path}")
     print(f"📁 Directory: {checkpoint_dir}")
-    print(f"🎯 Architecture: 32 obs -> 256 -> 256 -> 9 actions")
+    print(f"🎯 Architecture: 243 obs -> 512 -> 256 -> 256 -> 8 actions")
     print(f"🤖 Bot should now be able to load this checkpoint!")
     
     return checkpoint_path
@@ -74,8 +75,16 @@ def test_checkpoint_compatibility():
     
     # Import bot components
     import sys
-    sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
-    from bot import latest_checkpoint, TinyPolicy, OBS_SIZE, N_ACTIONS
+    import os
+    src_path = os.path.join(os.path.dirname(__file__), '..', 'src')
+    if src_path not in sys.path:
+        sys.path.insert(0, src_path)
+    
+    try:
+        from bot import latest_checkpoint, TinyPolicy, OBS_SIZE, N_ACTIONS
+    except ImportError as e:
+        print(f"❌ Failed to import bot components: {e}")
+        return False
     
     # Check if our checkpoint is detected
     ckpt_path = latest_checkpoint()
