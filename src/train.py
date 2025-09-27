@@ -330,6 +330,102 @@ class DistanceToBallReward(RewardFunction[AgentID, GameState, float]):
         return rewards
 
 
+class GroundContactReward(RewardFunction[AgentID, GameState, float]):
+    """Reward for staying on the ground - discourages wall riding"""
+    
+    def reset(self, agents: List[AgentID], initial_state: GameState, shared_info: Dict[str, Any]) -> None:
+        pass
+    
+    def get_rewards(
+        self,
+        agents: List[AgentID],
+        state: GameState,
+        is_terminated: Dict[AgentID, bool],
+        is_truncated: Dict[AgentID, bool],
+        shared_info: Dict[str, Any],
+    ) -> Dict[AgentID, float]:
+        rewards: Dict[AgentID, float] = {}
+        
+        for agent in agents:
+            car = state.cars[agent]
+            
+            # Strong reward for being on ground
+            if car.on_ground:
+                # Additional check: car should be at reasonable ground height
+                # Field floor is at z=0, ceiling is at z=2044
+                # Ground level is around z=17-20 for a standard car
+                car_height = car.physics.position[2]
+                
+                if car_height < 100:  # Close to ground level
+                    rewards[agent] = 1.0
+                elif car_height < 300:  # Still reasonable
+                    rewards[agent] = 0.5
+                else:  # High up (likely on wall/ceiling)
+                    rewards[agent] = -0.5  # Penalty for being high up
+            else:
+                # Penalty for being in air (unless it's a short jump)
+                car_height = car.physics.position[2]
+                if car_height < 200:  # Short jump/aerial
+                    rewards[agent] = 0.1
+                else:  # High aerial or wall riding
+                    rewards[agent] = -0.3
+                    
+        return rewards
+
+
+class WallContactPenalty(RewardFunction[AgentID, GameState, float]):
+    """Penalty for driving on walls - stronger discouragement of wall riding"""
+    
+    def reset(self, agents: List[AgentID], initial_state: GameState, shared_info: Dict[str, Any]) -> None:
+        pass
+    
+    def get_rewards(
+        self,
+        agents: List[AgentID],
+        state: GameState,
+        is_terminated: Dict[AgentID, bool],
+        is_truncated: Dict[AgentID, bool],
+        shared_info: Dict[str, Any],
+    ) -> Dict[AgentID, float]:
+        rewards: Dict[AgentID, float] = {}
+        
+        # Field dimensions (approximate)
+        FIELD_WIDTH = 8192  # x-axis
+        FIELD_LENGTH = 10240  # y-axis
+        FIELD_HEIGHT = 2044  # z-axis
+        
+        for agent in agents:
+            car = state.cars[agent]
+            pos = car.physics.position
+            
+            # Check if car is near walls or ceiling
+            near_wall = (
+                abs(pos[0]) > FIELD_WIDTH/2 - 200 or  # Near side walls
+                abs(pos[1]) > FIELD_LENGTH/2 - 200 or  # Near end walls
+                pos[2] > FIELD_HEIGHT - 300  # Near ceiling
+            )
+            
+            # Calculate up vector from car's euler angles (same as in observation builder)
+            pitch, yaw, roll = car.physics.euler_angles
+            up_z = math.sin(roll) * math.cos(pitch)
+            ground_alignment = abs(up_z)  # How aligned with ground normal (0,0,1)
+            
+            if near_wall and car.on_ground and ground_alignment < 0.7:
+                # Car is "on ground" but not aligned with actual ground = wall riding
+                rewards[agent] = -1.0
+            elif near_wall:
+                # Near walls but not necessarily riding them
+                rewards[agent] = -0.2
+            elif car.on_ground and ground_alignment > 0.8:
+                # Properly on the ground
+                rewards[agent] = 0.1
+            else:
+                # Neutral
+                rewards[agent] = 0.0
+                
+        return rewards
+
+
 # ----------------- Env builder -----------------
 def build_rlgym_v2_env(preset: str = "standard") -> RLGymV2GymWrapper:
     import numpy as _np
@@ -377,16 +473,20 @@ def build_rlgym_v2_env(preset: str = "standard") -> RLGymV2GymWrapper:
             (SpeedTowardBallReward(), 0.5),             # Reward for chasing ball
             (VelocityBallToGoalReward(), 1.0),          # Reward for ball toward goal
             
+            # Ground-focused rewards (anti-wall-riding)
+            (GroundContactReward(), 1.0),               # Strong reward for ground play
+            (WallContactPenalty(), 2.0),                # Strong penalty for wall riding
+            
             # Secondary rewards
-            (InAirReward(), 0.001),                     # Reduced aerial emphasis
             (GoalReward(), 10.0),                       # High reward for goals
         )
     else:
-        # Standard reward function for other presets
+        # Standard reward function for other presets - also discourage wall riding
         reward_fn = CombinedReward(
-            (InAirReward(), 0.002),
             (SpeedTowardBallReward(), 0.01),
             (VelocityBallToGoalReward(), 0.1),
+            (GroundContactReward(), 0.5),               # Moderate ground preference
+            (WallContactPenalty(), 1.0),                # Penalty for wall riding
             (GoalReward(), 10.0),
         )
 

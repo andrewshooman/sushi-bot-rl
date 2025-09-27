@@ -16,7 +16,38 @@ CHECKPOINT_ROOT = os.path.join(BOT_DIR, 'data', 'checkpoints')
 # ----------------------------------------------------
 
 def latest_checkpoint():
-    # Priority order: current_aggressive > current_enhanced > current_simple > timestamped directories
+    """
+    Find the latest checkpoint with the following priority:
+    1. Standardized format: standardized/latest_[type]/PPO_POLICY.pt
+    2. Legacy current directories: current_aggressive > current_enhanced > current_simple
+    3. All other timestamped directories (newest first)
+    """
+    
+    # Check for standardized format first (newest approach)
+    standardized_dir = os.path.join(CHECKPOINT_ROOT, 'standardized')
+    if os.path.isdir(standardized_dir):
+        # Priority order for standardized checkpoints
+        for model_type in ['aggressive', 'enhanced', 'simple']:
+            latest_dir = os.path.join(standardized_dir, f'latest_{model_type}')
+            policy_path = os.path.join(latest_dir, 'PPO_POLICY.pt')
+            if os.path.isfile(policy_path):
+                print(f"Loading standardized {model_type} checkpoint: {policy_path}")
+                return policy_path
+        
+        # If no latest_ directories, check the newest checkpoint by rank
+        for model_type in ['aggressive', 'enhanced', 'simple']:
+            type_dir = os.path.join(standardized_dir, model_type)
+            if os.path.isdir(type_dir):
+                # Get directories sorted by rank (001 = newest)
+                subdirs = sorted([d for d in os.listdir(type_dir) 
+                                if os.path.isdir(os.path.join(type_dir, d))])
+                if subdirs:
+                    policy_path = os.path.join(type_dir, subdirs[0], 'PPO_POLICY.pt')
+                    if os.path.isfile(policy_path):
+                        print(f"Loading standardized {model_type} checkpoint: {policy_path}")
+                        return policy_path
+    
+    # Legacy format support - Priority order: current_aggressive > current_enhanced > current_simple
     priority_dirs = ['current_aggressive', 'current_enhanced', 'current_simple']
     
     # First check priority directories
@@ -28,6 +59,7 @@ def latest_checkpoint():
                 if os.path.isdir(unique_dir):
                     policy_path = os.path.join(unique_dir, 'PPO_POLICY.pt')
                     if os.path.isfile(policy_path):
+                        print(f"Loading legacy checkpoint: {policy_path}")
                         return policy_path
     
     # Fallback to all directories (for timestamped backups)
@@ -37,23 +69,33 @@ def latest_checkpoint():
     
     # Check for RLGym-PPO format first (newer format)
     for run_dir in reversed(runs):  # Check newest first
+        # Skip standardized directory to avoid duplicates
+        if 'standardized' in run_dir:
+            continue
+            
         # Look for RLGym-PPO checkpoint structure: run_dir/unique_id/PPO_POLICY.pt
         unique_dirs = sorted(glob.glob(os.path.join(run_dir, '*')))
         for unique_dir in reversed(unique_dirs):
             if os.path.isdir(unique_dir):
                 policy_path = os.path.join(unique_dir, 'PPO_POLICY.pt')
                 if os.path.isfile(policy_path):
+                    print(f"Loading fallback checkpoint: {policy_path}")
                     return policy_path
     
-    # Fallback to original format
+    # Final fallback to original format
     for run_dir in reversed(runs):
+        if 'standardized' in run_dir:
+            continue
+            
         # prefer explicit latest.pt
         lp = os.path.join(run_dir, 'latest.pt')
         if os.path.isfile(lp):
+            print(f"Loading latest.pt: {lp}")
             return lp
         # fallback to lexicographically-last *.pt
         cands = sorted(glob.glob(os.path.join(run_dir, '*.pt')))
         if cands:
+            print(f"Loading final fallback: {cands[-1]}")
             return cands[-1]
     
     return None

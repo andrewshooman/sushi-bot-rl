@@ -1,0 +1,19 @@
+{
+    "cumulative_timesteps": 1800120,
+    "cumulative_model_updates": 206,
+    "policy_average_reward": 1.485586309585034,
+    "epoch": 34,
+    "ts_since_last_save": 50006,
+    "reward_running_stats": {
+        "mean": [
+            0.15971066019686053
+        ],
+        "var": [
+            33297.24980133798
+        ],
+        "shape": [
+            1
+        ],
+        "count": 5400
+    }
+}

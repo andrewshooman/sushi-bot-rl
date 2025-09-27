@@ -1,0 +1,167 @@
+{
+  "generated": "2025-09-26T21:43:57.078643",
+  "total_checkpoints": 23,
+  "checkpoints": [
+    {
+      "rank": 1,
+      "model_type": "enhanced",
+      "steps": 1000068,
+      "timestamp": "2025-09-26T21:33:02.512792",
+      "original_path": "C:\\Users\\sushi\\Documents\\RL Bot\\sushi-bot-rl\\data\\checkpoints\\new_enhanced_1758936656271575-1758936656272574300\\1000068\\PPO_POLICY.pt"
+    },
+    {
+      "rank": 2,
+      "model_type": "enhanced",
+      "steps": 950066,
+      "timestamp": "2025-09-26T21:32:56.681080",
+      "original_path": "C:\\Users\\sushi\\Documents\\RL Bot\\sushi-bot-rl\\data\\checkpoints\\new_enhanced_1758936656271575-1758936656272574300\\950066\\PPO_POLICY.pt"
+    },
+    {
+      "rank": 3,
+      "model_type": "enhanced",
+      "steps": 900064,
+      "timestamp": "2025-09-26T21:32:50.951023",
+      "original_path": "C:\\Users\\sushi\\Documents\\RL Bot\\sushi-bot-rl\\data\\checkpoints\\new_enhanced_1758936656271575-1758936656272574300\\900064\\PPO_POLICY.pt"
+    },
+    {
+      "rank": 4,
+      "model_type": "enhanced",
+      "steps": 850062,
+      "timestamp": "2025-09-26T21:32:45.166851",
+      "original_path": "C:\\Users\\sushi\\Documents\\RL Bot\\sushi-bot-rl\\data\\checkpoints\\new_enhanced_1758936656271575-1758936656272574300\\850062\\PPO_POLICY.pt"
+    },
+    {
+      "rank": 5,
+      "model_type": "enhanced",
+      "steps": 800058,
+      "timestamp": "2025-09-26T21:32:39.330427",
+      "original_path": "C:\\Users\\sushi\\Documents\\RL Bot\\sushi-bot-rl\\data\\checkpoints\\new_enhanced_1758936656271575-1758936656272574300\\800058\\PPO_POLICY.pt"
+    },
+    {
+      "rank": 6,
+      "model_type": "enhanced",
+      "steps": 100004,
+      "timestamp": "2025-09-26T21:30:43.049070",
+      "original_path": "C:\\Users\\sushi\\Documents\\RL Bot\\sushi-bot-rl\\data\\checkpoints\\new_enhanced_1758936628133055-1758936628133055300\\100004\\PPO_POLICY.pt"
+    },
+    {
+      "rank": 7,
+      "model_type": "enhanced",
+      "steps": 50002,
+      "timestamp": "2025-09-26T21:30:37.606583",
+      "original_path": "C:\\Users\\sushi\\Documents\\RL Bot\\sushi-bot-rl\\data\\checkpoints\\new_enhanced_1758936628133055-1758936628133055300\\50002\\PPO_POLICY.pt"
+    },
+    {
+      "rank": 8,
+      "model_type": "aggressive",
+      "steps": 100008,
+      "timestamp": "2025-09-26T21:08:21.351338",
+      "original_path": "C:\\Users\\sushi\\Documents\\RL Bot\\sushi-bot-rl\\data\\checkpoints\\current_aggressive\\100008\\PPO_POLICY.pt"
+    },
+    {
+      "rank": 9,
+      "model_type": "aggressive",
+      "steps": 100008,
+      "timestamp": "2025-09-26T21:08:21.351338",
+      "original_path": "C:\\Users\\sushi\\Documents\\RL Bot\\sushi-bot-rl\\data\\checkpoints\\current_aggressive-1758935283159743100\\100008\\PPO_POLICY.pt"
+    },
+    {
+      "rank": 10,
+      "model_type": "aggressive",
+      "steps": 50006,
+      "timestamp": "2025-09-26T21:08:14.432444",
+      "original_path": "C:\\Users\\sushi\\Documents\\RL Bot\\sushi-bot-rl\\data\\checkpoints\\current_aggressive-1758935283159743100\\50006\\PPO_POLICY.pt"
+    },
+    {
+      "rank": 11,
+      "model_type": "enhanced",
+      "steps": 2000136,
+      "timestamp": "2025-09-26T21:01:32.315943",
+      "original_path": "C:\\Users\\sushi\\Documents\\RL Bot\\sushi-bot-rl\\data\\checkpoints\\current_enhanced-1758934644171787900\\2000136\\PPO_POLICY.pt"
+    },
+    {
+      "rank": 12,
+      "model_type": "enhanced",
+      "steps": 1950132,
+      "timestamp": "2025-09-26T21:01:26.293390",
+      "original_path": "C:\\Users\\sushi\\Documents\\RL Bot\\sushi-bot-rl\\data\\checkpoints\\current_enhanced-1758934644171787900\\1950132\\PPO_POLICY.pt"
+    },
+    {
+      "rank": 13,
+      "model_type": "enhanced",
+      "steps": 1900128,
+      "timestamp": "2025-09-26T21:01:20.173006",
+      "original_path": "C:\\Users\\sushi\\Documents\\RL Bot\\sushi-bot-rl\\data\\checkpoints\\current_enhanced-1758934644171787900\\1900128\\PPO_POLICY.pt"
+    },
+    {
+      "rank": 14,
+      "model_type": "enhanced",
+      "steps": 1850126,
+      "timestamp": "2025-09-26T21:01:14.196187",
+      "original_path": "C:\\Users\\sushi\\Documents\\RL Bot\\sushi-bot-rl\\data\\checkpoints\\current_enhanced-1758934644171787900\\1850126\\PPO_POLICY.pt"
+    },
+    {
+      "rank": 15,
+      "model_type": "enhanced",
+      "steps": 1800120,
+      "timestamp": "2025-09-26T21:01:08.231309",
+      "original_path": "C:\\Users\\sushi\\Documents\\RL Bot\\sushi-bot-rl\\data\\checkpoints\\current_enhanced-1758934644171787900\\1800120\\PPO_POLICY.pt"
+    },
+    {
+      "rank": 16,
+      "model_type": "enhanced",
+      "steps": 1000066,
+      "timestamp": "2025-09-26T19:59:37.242525",
+      "original_path": "C:\\Users\\sushi\\Documents\\RL Bot\\sushi-bot-rl\\data\\checkpoints\\current_enhanced-1758931078286010300\\1000066\\PPO_POLICY.pt"
+    },
+    {
+      "rank": 17,
+      "model_type": "enhanced",
+      "steps": 950060,
+      "timestamp": "2025-09-26T19:59:32.225194",
+      "original_path": "C:\\Users\\sushi\\Documents\\RL Bot\\sushi-bot-rl\\data\\checkpoints\\current_enhanced-1758931078286010300\\950060\\PPO_POLICY.pt"
+    },
+    {
+      "rank": 18,
+      "model_type": "enhanced",
+      "steps": 900060,
+      "timestamp": "2025-09-26T19:59:27.281828",
+      "original_path": "C:\\Users\\sushi\\Documents\\RL Bot\\sushi-bot-rl\\data\\checkpoints\\current_enhanced-1758931078286010300\\900060\\PPO_POLICY.pt"
+    },
+    {
+      "rank": 19,
+      "model_type": "enhanced",
+      "steps": 850056,
+      "timestamp": "2025-09-26T19:59:22.146544",
+      "original_path": "C:\\Users\\sushi\\Documents\\RL Bot\\sushi-bot-rl\\data\\checkpoints\\current_enhanced-1758931078286010300\\850056\\PPO_POLICY.pt"
+    },
+    {
+      "rank": 20,
+      "model_type": "enhanced",
+      "steps": 800056,
+      "timestamp": "2025-09-26T19:59:17.050419",
+      "original_path": "C:\\Users\\sushi\\Documents\\RL Bot\\sushi-bot-rl\\data\\checkpoints\\current_enhanced-1758931078286010300\\800056\\PPO_POLICY.pt"
+    },
+    {
+      "rank": 21,
+      "model_type": "simple",
+      "steps": 50004,
+      "timestamp": "2025-09-26T19:50:56.743742",
+      "original_path": "C:\\Users\\sushi\\Documents\\RL Bot\\sushi-bot-rl\\data\\checkpoints\\current_simple-1758930649676530700\\50004\\PPO_POLICY.pt"
+    },
+    {
+      "rank": 22,
+      "model_type": "enhanced",
+      "steps": 100000,
+      "timestamp": "2025-09-26T19:50:34.969834",
+      "original_path": "C:\\Users\\sushi\\Documents\\RL Bot\\sushi-bot-rl\\data\\checkpoints\\current_enhanced-1758930627286453200\\100000\\PPO_POLICY.pt"
+    },
+    {
+      "rank": 23,
+      "model_type": "enhanced",
+      "steps": 50000,
+      "timestamp": "2025-09-26T19:50:01.787863",
+      "original_path": "C:\\Users\\sushi\\Documents\\RL Bot\\sushi-bot-rl\\data\\checkpoints\\current_enhanced-1758930592590092400\\50000\\PPO_POLICY.pt"
+    }
+  ]
+}

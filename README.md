@@ -199,6 +199,93 @@ This project is open source. See the LICENSE file for details.
 - RLGym-PPO for the PPO implementation
 - RocketSim for fast physics simulation
 
+## ✅ TODO List
+
+### High Priority
+
+- [x] **Anti-Wall-Riding Behavior** ✅ **COMPLETED**
+  - ✅ Added GroundContactReward to encourage ground play
+  - ✅ Added WallContactPenalty to discourage wall riding  
+  - ✅ Removed InAirReward that was encouraging aerial play
+  - ✅ Updated both aggressive and standard reward presets
+
+- [ ] **Architecture Compatibility Fix**
+  - Align training observation space (116 features) with bot expectations (64 features)
+  - Ensure training action space (19 actions) matches bot implementation
+  - Update bot.py to handle enhanced observation format properly
+
+- [ ] **Model Performance Validation**
+  - Test current checkpoints in actual matches
+  - Benchmark performance against baseline bots
+  - Validate goal scoring and defensive capabilities
+
+- [ ] **Training Stability**
+  - Monitor training convergence across different presets
+  - Fix any NaN/infinity issues in reward calculations
+  - Optimize hyperparameters for faster convergence
+
+### Medium Priority
+
+- [ ] **Enhanced Reward System**
+  - Implement aerial play rewards
+  - Add team play and passing rewards
+  - Tune reward weights for different bot personalities
+
+- [ ] **Bot Variants**
+  - Complete aggressive bot training and testing
+  - Implement defensive specialist variant
+  - Create 1v1 specialized training preset
+
+- [ ] **Checkpoint Management**
+  - Implement checkpoint versioning system
+  - Add model comparison utilities
+  - Create checkpoint rollback functionality
+
+- [ ] **Documentation**
+  - Add detailed training metrics explanation
+  - Create bot deployment guide
+  - Document reward function components
+
+### Low Priority
+
+- [ ] **Performance Optimization**
+  - Profile training bottlenecks
+  - Optimize observation building
+  - Implement multi-GPU training support
+
+- [ ] **Advanced Features**
+  - Add curriculum learning stages
+  - Implement self-play training
+  - Create tournament bracket system for model evaluation
+
+- [ ] **Code Quality**
+  - Add comprehensive unit tests
+  - Implement continuous integration
+  - Add type hints throughout codebase
+  - Refactor duplicate code sections
+
+- [ ] **User Experience**
+  - Create GUI for training management
+  - Add real-time training metrics dashboard
+  - Implement one-click deployment system
+
+### Research & Experimentation
+
+- [ ] **Alternative Algorithms**
+  - Experiment with SAC (Soft Actor-Critic)
+  - Test IMPALA for distributed training
+  - Compare with Rainbow DQN variants
+
+- [ ] **Advanced Observations**
+  - Implement visual observations from game camera
+  - Add opponent behavior prediction features
+  - Experiment with attention mechanisms
+
+- [ ] **Training Environments**
+  - Create custom training scenarios
+  - Implement dynamic difficulty adjustment
+  - Add multi-agent cooperative training
+
 ## 📚 Additional Resources
 
 - [RLGym Documentation](https://rlgym.org/)
@@ -207,4 +294,4 @@ This project is open source. See the LICENSE file for details.
 
 ---
 
-**Status**: Active development - Training pipeline functional, bot performance improving with each iteration.
+**Status**: ✅ **ACTIVELY TRAINING** - Anti-wall-riding aggressive preset running (1M steps). Checkpoint system standardized, bot performance improving with ground-focused rewards.
