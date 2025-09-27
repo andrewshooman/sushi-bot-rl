@@ -5,8 +5,8 @@ Test checkpoint loading with the new standardized format
 import sys
 import os
 
-# Add the bot directory to the path
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# Add the src directory to the path
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from bot import latest_checkpoint
 

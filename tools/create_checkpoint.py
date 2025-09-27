@@ -74,7 +74,7 @@ def test_checkpoint_compatibility():
     
     # Import bot components
     import sys
-    sys.path.append('.')
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
     from bot import latest_checkpoint, TinyPolicy, OBS_SIZE, N_ACTIONS
     
     # Check if our checkpoint is detected

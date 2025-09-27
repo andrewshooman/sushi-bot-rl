@@ -15,20 +15,29 @@ A reinforcement learning bot for Rocket League built using RLGym and RLGym-PPO. 
 
 ```
 sushi-bot-rl/
-├── bot.py                 # Main RLBot agent implementation
-├── train.py              # Training script with multiple presets
-├── test_bot.py           # Bot testing utilities
-├── create_checkpoint.py  # Checkpoint creation tools
-├── appearance.cfg        # Bot appearance configuration
-├── bot.cfg              # RLBot configuration
-├── TRAINING_SETUP.md    # Detailed training documentation
+├── src/                 # Source code
+│   ├── bot.py          # Main RLBot agent implementation
+│   ├── train.py        # Training script with multiple presets
+│   ├── enhanced_obs.py # Advanced observation builder
+│   └── enhanced_actions.py # Sophisticated action parser
+├── tests/              # Test files
+│   ├── test_bot.py     # Bot testing utilities
+│   └── test_checkpoint_loading.py # Checkpoint tests
+├── tools/              # Utility scripts
+│   ├── create_checkpoint.py # Checkpoint creation tools
+│   └── standardize_checkpoints.py # Checkpoint organization
+├── docs/               # Documentation
+│   └── TRAINING_SETUP.md # Detailed training documentation
+├── examples/           # Example projects
+│   └── sample-project-2/ # Advanced bot examples (Nexto)
 ├── data/
-│   └── checkpoints/     # Saved model checkpoints
-│       ├── current_simple/
-│       ├── current_enhanced/
-│       └── current_aggressive/
-└── sample-project/      # Example RLBot project structure
+│   └── checkpoints/    # Saved model checkpoints
+│       └── standardized/ # Organized checkpoint format
+├── requirements.txt    # Python dependencies
+└── setup.py           # Package setup
 ```
+
+See [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) for detailed information about the organization.
 
 ## 🛠️ Setup
 
@@ -61,23 +70,24 @@ pip install rlbot rlgym rlgym-ppo torch numpy
 
 Train with default enhanced preset:
 ```bash
-python train.py
+cd src/
+python train.py --train
 ```
 
 ### Training Presets
 
-- **Quick**: `python train.py --preset quick` (500K steps, 4 workers)
-- **Standard**: `python train.py --preset standard` (2M steps, 8 workers) 
-- **Long**: `python train.py --preset long` (10M steps, 16 workers)
+- **Quick**: `python train.py --train --preset quick` (500K steps, 4 workers)
+- **Standard**: `python train.py --train --preset standard` (2M steps, 8 workers) 
+- **Long**: `python train.py --train --preset long` (10M steps, 16 workers)
 
 ### Custom Training
 
 ```bash
 # Train for specific number of steps
-python train.py --steps 5000000
+python train.py --train --steps 5000000
 
 # Train with RLViser visualization
-python train.py --rlviser
+python train.py --train --rlviser
 
 # List all available presets
 python train.py --list-presets
@@ -114,7 +124,11 @@ python train.py --list-presets
 
 ```bash
 # Test bot functionality
+cd tests/
 python test_bot.py
+
+# Test checkpoint loading
+python test_checkpoint_loading.py
 
 # Test training setup
 python test_setup.py

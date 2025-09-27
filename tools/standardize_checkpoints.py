@@ -11,8 +11,9 @@ from datetime import datetime
 import json
 
 # Configuration
-BOT_DIR = os.path.dirname(os.path.abspath(__file__))
-CHECKPOINT_ROOT = os.path.join(BOT_DIR, 'data', 'checkpoints')
+TOOLS_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(TOOLS_DIR)
+CHECKPOINT_ROOT = os.path.join(PROJECT_ROOT, 'data', 'checkpoints')
 STANDARDIZED_DIR = os.path.join(CHECKPOINT_ROOT, 'standardized')
 
 def get_checkpoint_info(checkpoint_path):
